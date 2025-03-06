@@ -56,14 +56,14 @@
         </div>
     </nav>
 
-    <div class="container" style="width: 92%;">
+    <div class="container" style="width: 95%;">
     <?php 
        $query = "
                 SELECT pay.Bank, pay.Shipping, pay.DatePayment,
                     o.Size, o.Color, o.DateOrdered, o.OrderID,
                     p.Productname, p.ProductBrand,
                     c.Username,
-                    r.DateReport, r.ReportID
+                    r.DateReport, r.ReportID, r.Address
                 FROM tbl_reports AS r
                 LEFT JOIN tbl_payments AS pay ON r.PaymentID = pay.PaymentID
                 LEFT JOIN tbl_orders AS o ON pay.OrderID = o.OrderID
@@ -93,6 +93,7 @@
                             <td>Color</td>
                             <td>Bank</td>
                             <td>Shipping</td>
+                            <td>Address</td>
                             <td>DateOrdered</td>
                             <td>DatePayment</td>
                             <td>DateReport</td>
@@ -108,6 +109,7 @@
                                 <td style="text-align: center;"><?php echo $Rows['Color']; ?></td>
                                 <td style="text-align: center;"><?php echo $Rows['Bank']; ?></td>
                                 <td style="text-align: center;"><?php echo $Rows['Shipping']; ?></td>
+                                <td style="text-align: center;"><?php echo $Rows['Address']; ?></td>
                                 <td style="text-align: center;"><?php echo $Rows['DateOrdered']; ?></td>
                                 <td style="text-align: center;"><?php echo $Rows['DatePayment']; ?></td>
                                 <td style="text-align: center;"><?php echo $Rows['DateReport']; ?></td>
