@@ -1,4 +1,4 @@
-<? session_start(); ?>
+<?php session_start(); ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -90,9 +90,29 @@
             unset($_SESSION['toast_message']);
             echo "<script>
                 window.onload = function() {
+                    var toastt = document.createElement('div');
+                    toastt.classList.add('toastt');
+                    toastt.innerHTML = '$toast_message';
+                    document.body.appendChild(toastt);
+                    toastt.style.display = 'block'; // Show toastt
+
+                    setTimeout(function() {
+                        toastt.style.display = 'none'; // Hide toastt after 5 seconds
+                    }, 5000);
+                };
+            </script>";
+        }
+    ?>
+
+    <?php
+        if (isset($_SESSION['toastlogin'])) {
+            $toastlogin = $_SESSION['toastlogin'];
+            unset($_SESSION['toastlogin']);
+            echo "<script>
+                window.onload = function() {
                     var toast = document.createElement('div');
                     toast.classList.add('toast');
-                    toast.innerHTML = '$toast_message';
+                    toast.innerHTML = '$toastlogin';
                     document.body.appendChild(toast);
                     toast.style.display = 'block'; // Show toast
 
@@ -118,6 +138,20 @@
         left: 50%;
         transform: translateX(-50%);
         background-color:rgb(167, 40, 40);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+        z-index: 99999;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        display: none;
+    }
+    .toastt {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #28a745;
         color: white;
         padding: 10px 20px;
         border-radius: 5px;

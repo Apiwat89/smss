@@ -33,7 +33,7 @@
         $resIn = mysqli_query($conn, $sqlIn);
 
         if ($resIn) {
-            echo "<script>window.alert('Order sent successfully'); window.open('Management_Orders.php','_self',null,true);</script>";
+            echo "<script>window.open('Management_Orders.php','_self',null,true);</script>";
         } else {
             die("Error inserting into tbl_reports: " . mysqli_error($conn));
         }

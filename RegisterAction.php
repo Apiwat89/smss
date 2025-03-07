@@ -36,7 +36,7 @@
 			if(!$res) {
 				echo "Failed " . mysqli_connect_error();
 			} else {
-				echo '<script>window.alert("Update Customer Completed!"); window.open("Management_Customers.php","_self",null,true);</script>'; 
+				echo '<script> window.open("Management_Customers.php","_self",null,true);</script>'; 
 			}
 		}
 		

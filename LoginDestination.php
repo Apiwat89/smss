@@ -25,7 +25,7 @@
 		}
 	else
 		{
-			$_SESSION['toast_message'] = 'Username and password are incorrect.';
+			$_SESSION['toastlogin'] = 'Username and password are incorrect.';
 			header('Location: Login.php');
 			exit;
 		}

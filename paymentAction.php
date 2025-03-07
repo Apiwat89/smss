@@ -13,6 +13,8 @@
       $res = mysqli_query($conn,$query);
 
       if($res){
-            echo "<script>window.open('Cart.php','_self',null,true);</script>";
+            $_SESSION['messagecart'] = 'Payment has been completed. You can now wait to receive the product.';
+            header('Location: Cart.php');
+            exit;
       }
 ?>

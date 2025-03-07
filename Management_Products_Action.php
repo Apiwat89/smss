@@ -72,7 +72,7 @@
 	
 		$res = mysqli_query($conn, $sql);
 		if ($res) {
-			echo '<script>window.alert("Product has been successfully updated!"); window.open("Management_ProductsList.php","_self",null,true)</script>';
+			echo '<script>window.open("Management_ProductsList.php","_self",null,true)</script>';
 		}
 	} 
 	else if($ProductAction == "Delete")
@@ -81,7 +81,7 @@
 		$sql = "DELETE from `tbl_products` where `ProductID` = $_ProductID";
 		$res = mysqli_query($conn, $sql);
 		if ($res) {
-			echo '<script>window.alert("Product has been successfully deleted!"); window.open("Management_ProductsList.php","_self",null,true)</script>';
+			echo '<script>window.open("Management_ProductsList.php","_self",null,true)</script>';
 		}
 	}
 ?>

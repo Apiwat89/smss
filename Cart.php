@@ -227,6 +227,26 @@
         </div>
     </div>
 
+    <?php
+        if (isset($_SESSION['messagecart'])) {
+            $messagecart = $_SESSION['messagecart'];
+            unset($_SESSION['messagecart']);
+            echo "<script>
+                window.onload = function() {
+                    var toast = document.createElement('div');
+                    toast.classList.add('toast');
+                    toast.innerHTML = '$messagecart';
+                    document.body.appendChild(toast);
+                    toast.style.display = 'block'; // Show toast
+
+                    setTimeout(function() {
+                        toast.style.display = 'none'; // Hide toast after 5 seconds
+                    }, 5000);
+                };
+            </script>";
+        }
+    ?>
+
     <script src="js/jquery.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script>
@@ -258,6 +278,20 @@
 </html>
 
 <style>
+    .toast {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #28a745;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+        z-index: 9999;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        display: none;
+    }
     .test {
         margin-top: 20px;
     }
