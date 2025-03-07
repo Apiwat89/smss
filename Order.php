@@ -87,34 +87,31 @@
                     <h2 class="intro-text text-center">Order</h2>
                     <hr><br>
                 </div>
-
-                <div class="col-md-6">
+                <div class="col-md-6 d-flex justify-content-center align-items-center">
                  <form role="form" action="OrderAction.php?ProductID=<?php echo $ProductID; ?>&CustomerID=<?php echo $CustomerID; ?>" method="POST">
                     <div class="form-group">
-                      <label for="ProductID">Product ID:</label>
+                      <label for="ProductID" style="float: left;">Product ID:</label>
                       <input type="text" name="ProductID" class="form-control" id="ProductID" value="<?php echo $ProductID; ?>" disabled>
                     </div>
                     <div class="form-group">
-                      <label for="CustomerID">Customer ID:</label>
+                      <label for="CustomerID" style="float: left;">Customer ID:</label>
                       <input type="text" name="CustomerID" class="form-control" id="CustomerID" value="<?php echo $CustomerID; ?>" disabled>
                     </div>
                     <div class="form-group">
-                        <label for="ProductName">Product Name:</label>
+                        <label for="ProductName" style="float: left;">Product Name:</label>
                         <input type="text" name="ProductName" class="form-control" id="ProductName" value="<?php echo $product_name; ?>" disabled>
                     </div>
                     <div class="form-group">
-                        <label for="ProductColor">Product Color:</label>
+                        <label for="ProductColor" style="float: left;">Product Color:</label>
                         <input type="text" name="ProductColor" class="form-control" id="ProductColor" value="<?php echo $product_color; ?>">
                     </div>
                     <div class="form-group">
-                        <label for="ProductSize">Product Size:</label>
+                        <label for="ProductSize" style="float: left;">Product Size:</label>
                         <input type="text" pattern="[0-9]*" inputmode="numeric" name="ProductSize" class="form-control" id="ProductSize" value="<?php echo $product_size; ?>">
                     </div>
                         <button type="submit" style="float: right;" class="btn btn-default">Submit</button>
                     </form>
                 </div>
-                
-                <div class="clearfix"></div>
             </div>
         </div>
 
@@ -140,3 +137,12 @@
 </body>
 
 </html>
+
+<style> 
+    .box {
+        display: grid;
+        justify-items: center;
+        align-items: center;
+        text-align: center;
+    }
+</style>

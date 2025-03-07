@@ -26,6 +26,7 @@
 
 <body>
     <div class="brand" style="margin: 0 auto;">Luxshoery</div>
+    
     <div class="address-bar" style="margin: 0 auto;"><strong>step</strong> into style </div>
 
     <nav class="navbar navbar-default" role="navigation">
@@ -53,145 +54,137 @@
         $rowC = mysqli_fetch_array($resC,MYSQLI_ASSOC);
         $ID = $rowC['CustomerID'];
 
-        $queryO = "SELECT * FROM `tbl_orders` WHERE `CustomerID` = '$ID'";
-        $resO = mysqli_query($conn,$queryO);
-    ?>
-
-    <div class="container-fluid">
-    <?php 
         $inspectingItems = [];
         $cartItems = [];
+        $shippedItems = [];
 
-        while($rowOrders = mysqli_fetch_assoc($resO)) { 
-            $ProductID = $rowOrders['ProductID'];
-            $queryP = "SELECT * FROM `tbl_products` WHERE `ProductID` = '$ProductID'";
-            $resP = mysqli_query($conn, $queryP);
-
-            if (mysqli_num_rows($resP) > 0) {
-                $rowProducts = mysqli_fetch_assoc($resP);
-
-                $queryM = "SELECT * FROM `tbl_payments` WHERE `OrderID` = '".$rowOrders['OrderID']."'";
-                $resM = mysqli_query($conn, $queryM);
-
-                if (mysqli_num_rows($resM) > 0) {
-                    while ($rowPayments = mysqli_fetch_assoc($resM)) { 
-                        $queryC = "SELECT * FROM `tbl_reports` WHERE `PaymentID` = '".$rowPayments['PaymentID']."'";
-                        $resC = mysqli_query($conn, $queryC);
-                        $isInspecting = (mysqli_num_rows($resC) == 0);
-
-                        $item = [
-                            'product' => $rowProducts,
-                            'order' => $rowOrders,
-                            'payment' => $rowPayments
-                        ];
-
-                        if ($isInspecting) {
-                            $inspectingItems[] = $item;
-                        } 
-                    }
-                } else {
-                    $item = [
-                        'product' => $rowProducts,
-                        'order' => $rowOrders
-                    ]; $cartItems[] = $item;
-                }
+        $queryInspecing = "SELECT o.Size, o.Color, p.Productname, p.ProductBrand, p.ProductCategory, p.ProductPrice, p.ProductImageName
+                FROM tbl_orders AS o 
+                INNER JOIN tbl_payments AS pay ON o.OrderID = pay.OrderID
+                LEFT JOIN tbl_products AS p ON o.ProductID = p.ProductID
+                LEFT JOIN tbl_reports AS r ON pay.PaymentID = r.PaymentID
+                WHERE pay.CustomerID = '$ID' AND pay.PaymentID IS NOT NULL AND r.PaymentID IS NULL;
+            ";
+        $resInspecing = mysqli_query($conn, $queryInspecing);
+        if (mysqli_num_rows($resInspecing) > 0) {
+            while ($i = mysqli_fetch_assoc($resInspecing)) {
+                $inspectingItems[] = $i;
             }
         }
 
-        if (empty($inspectingItems) && empty($cartItems)) {
-            echo '<h2 class="intro-text text-center" style="font-weight: bold; padding: 200px;">Please '.
-            '<a href="shop.php" style="color: #007bff; text-decoration: none;">add</a> a product</h2>';
-
-        }
-        
-        if (!empty($inspectingItems)) { 
-            echo '<hr><h2 class="intro-text text-center" style="font-weight: bold;">Inspecting</h2><hr>';
-            foreach ($inspectingItems as $item) { ?>
-                <div class="row">
-                    <div class="col-lg-6">
-                        <img src="img/<?php echo htmlspecialchars($item['product']['ProductImageName']); ?>" class="img-fluid" alt="Product Image">
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="product-details">
-                            <h3><?php echo $item['product']['Productname'] ?></h3>
-                            <p><strong>Brand:</strong> <?php echo $item['product']['ProductBrand'] ?> (<?php echo $item['product']['ProductCategory'] ?>) </p>
-                            <p><strong>Size Available:</strong> <?php echo $item['order']['Size'] ?> </p>
-                            <p><strong>Colors Available:</strong> <?php echo $item['order']['Color'] ?> </p>
-                            <p><strong>Price:</strong> <?php echo number_format($item['product']['ProductPrice']) ?>.00</p>
-                            <h3 class="Inspecting">Inspecting</h3>
-                        </div>
-                    </div>
-                </div>
-            <?php }
-        }
-
-        if (!empty($cartItems)) { 
-            echo '<hr><h2 class="intro-text text-center" style="font-weight: bold;">Cart</h2><hr>';
-            foreach ($cartItems as $item) { ?>
-                <div class="row">
-                    <div class="col-lg-6">
-                        <img src="img/<?php echo htmlspecialchars($item['product']['ProductImageName']); ?>" class="img-fluid" alt="Product Image">
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="product-details">
-                            <h3><?php echo $item['product']['Productname'] ?></h3>
-                            <p><strong>Brand:</strong> <?php echo $item['product']['ProductBrand'] ?> (<?php echo $item['product']['ProductCategory'] ?>) </p>
-                            <p><strong>Size Available:</strong> <?php echo $item['order']['Size'] ?> </p>
-                            <p><strong>Colors Available:</strong> <?php echo $item['order']['Color'] ?> </p>
-                            <p><strong>Price:</strong> <?php echo number_format($item['product']['ProductPrice']) ?>.00</p>
-                            <button class="btn btn-primary" 
-                                onclick="openPaymentModal(
-                                    '<?php echo $item['order']['OrderID']; ?>', 
-                                    '<?php echo $ID; ?>'
-                                )">
-                                Order Now
-                            </button>
-                        </div>
-                    </div>
-                </div>
-        <?php }} ?>
-
-        <?php 
-            $showFinish = false;
-
-            $queryCOM = "
-                SELECT p.ProductImageName, p.Productname, p.ProductBrand, p.ProductCategory, p.ProductPrice, 
-                    o.Size, o.Color, r.PaymentID
-                FROM tbl_payments AS pay
-                LEFT JOIN tbl_reports AS r ON pay.PaymentID = r.PaymentID
-                LEFT JOIN tbl_orders AS o ON pay.OrderID = o.OrderID
+        $queryCart = "SELECT o.Size, o.Color, p.Productname, p.ProductBrand, p.ProductCategory, p.ProductPrice, p.ProductImageName, o.OrderID
+                FROM tbl_orders AS o
                 LEFT JOIN tbl_products AS p ON o.ProductID = p.ProductID
-                WHERE r.PaymentID IS NOT NULL AND pay.CustomerID = '$ID'
+                LEFT JOIN tbl_payments AS pay ON o.OrderID = pay.OrderID
+                WHERE o.CustomerID = '$ID' AND pay.OrderID IS NULL;
             ";
+        $resCart = mysqli_query($conn, $queryCart);
+        if (mysqli_num_rows($resCart) > 0) {
+            while ($i = mysqli_fetch_assoc($resCart)) {
+                $cartItems[] = $i;
+            }
+        }
 
-            $resCOM = mysqli_query($conn, $queryCOM);
-            
-            if ($resCOM && mysqli_num_rows($resCOM) > 0) {
-                while($rowPayments = mysqli_fetch_assoc($resCOM)) {
-                    if (!$showFinish) { ?>
-                        <hr>
-                        <h2 class="intro-text text-center" style="font-weight: bold;">Shipped</h2>
-                        <hr>
-        <?php $showFinish = true; } ?>
+        $queryShipped = "SELECT o.Size, o.Color, p.Productname, p.ProductBrand, p.ProductCategory, p.ProductPrice, p.ProductImageName, o.OrderID
+                FROM tbl_orders AS o
+                LEFT JOIN tbl_products AS p ON o.ProductID = p.ProductID
+                LEFT JOIN tbl_payments AS pay ON o.OrderID = pay.OrderID
+                LEFT JOIN tbl_reports AS r ON pay.PaymentID = r.PaymentID
+                WHERE o.CustomerID = '$ID' AND r.ReportID IS NOT NULL
+            ";
+        $resShipped = mysqli_query($conn, $queryShipped);
+        if (mysqli_num_rows($resShipped) > 0) {
+            while ($i = mysqli_fetch_assoc($resShipped)) {
+                $shippedItems[] = $i;
+            }
+        }
+    ?>
+
+    <div class="container-fluid" id="items-container">
+        <div class="filter-buttons text-center">
+            <button class="btn btn-primary" onclick="filterItems('all')">All</button>
+            <button class="btn btn-info" onclick="filterItems('cart')">Cart</button>
+            <button class="btn btn-warning" onclick="filterItems('inspecting')">Inspecting</button>
+            <button class="btn btn-success" onclick="filterItems('shipped')">Shipped</button>
+        </div>
+
+        <?php if ($inspectingItems != null) { ?>
+        <div class="items-group" data-category="inspecting"> 
+            <hr><h2 class="intro-text text-center" style="font-weight: bold;">Inspecting</h2><hr>
+            <?php foreach ($inspectingItems as $item) { ?>
             <div class="row">
                 <div class="col-lg-6">
-                    <img src="img/<?php echo htmlspecialchars($rowPayments['ProductImageName']); ?>" class="img-fluid" alt="Product Image">
+                    <img src="img/<?php echo htmlspecialchars($item['ProductImageName']); ?>" class="img-fluid" alt="Product Image">
                 </div>
                 <div class="col-lg-6">
                     <div class="product-details">
-                        <h3><?php echo $rowPayments['Productname'] ?></h3>
-                        <p><strong>Brand:</strong> <?php echo $rowPayments['ProductBrand'] ?> (<?php echo $rowPayments['ProductCategory'] ?>) </p>
-                        <p><strong>Size Available:</strong> <?php echo $rowPayments['Size'] ?> </p> 
-                        <p><strong>Colors Available:</strong> <?php echo $rowPayments['Color'] ?> </p> 
-                        <p><strong>Price:</strong> <?php echo number_format($rowPayments['ProductPrice']) ?>.00</p>
-                        
+                        <h3><?php echo $item['Productname'] ?></h3>
+                        <p><strong>Brand:</strong> <?php echo $item['ProductBrand'] ?> (<?php echo $item['ProductCategory'] ?>) </p>
+                        <p><strong>Size Available:</strong> <?php echo $item['Size'] ?> </p>
+                        <p><strong>Colors Available:</strong> <?php echo $item['Color'] ?> </p>
+                        <p><strong>Price:</strong> <?php echo number_format($item['ProductPrice']) ?>.00</p>
+                        <h3 class="Inspecting">Inspecting</h3>
+                    </div>
+                </div>
+            </div>
+            <?php } ?>
+        </div>
+        <?php } ?>
+
+        <?php if ($cartItems != null) { ?>
+        <div class="items-group" data-category="cart">
+            <hr><h2 class="intro-text text-center" style="font-weight: bold;">Cart</h2><hr>;
+            <?php foreach ($cartItems as $item) { ?>
+            <div class="row">
+                <div class="col-lg-6">
+                    <img src="img/<?php echo htmlspecialchars($item['ProductImageName']); ?>" class="img-fluid" alt="Product Image">
+                </div>
+                <div class="col-lg-6">
+                    <div class="product-details">
+                        <h3><?php echo $item['Productname'] ?></h3>
+                        <p><strong>Brand:</strong> <?php echo $item['ProductBrand'] ?> (<?php echo $item['ProductCategory'] ?>) </p>
+                        <p><strong>Size Available:</strong> <?php echo $item['Size'] ?> </p>
+                        <p><strong>Colors Available:</strong> <?php echo $item['Color'] ?> </p>
+                        <p><strong>Price:</strong> <?php echo number_format($item['ProductPrice']) ?>.00</p>
+                        <button class="btn btn-primary" 
+                            onclick="openPaymentModal(
+                                '<?php echo $item['OrderID']; ?>', 
+                                '<?php echo $ID; ?>'
+                            )">
+                            Order Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <?php } ?>
+        </div>
+        <?php } ?>
+
+        <?php if ($shippedItems != null) { ?>
+        <div class="items-group" data-category="shipped"> 
+            <hr><h2 class="intro-text text-center" style="font-weight: bold;">Shipped</h2><hr>
+            <?php foreach ($shippedItems as $item) { ?>
+            <div class="row">
+                <div class="col-lg-6">
+                    <img src="img/<?php echo htmlspecialchars($item['ProductImageName']); ?>" class="img-fluid" alt="Product Image">
+                </div>
+                <div class="col-lg-6">
+                    <div class="product-details">
+                        <h3><?php echo $item['Productname'] ?></h3>
+                        <p><strong>Brand:</strong> <?php echo $item['ProductBrand'] ?> (<?php echo $item['ProductCategory'] ?>) </p>
+                        <p><strong>Size Available:</strong> <?php echo $item['Size'] ?> </p>
+                        <p><strong>Colors Available:</strong> <?php echo $item['Color'] ?> </p>
+                        <p><strong>Price:</strong> <?php echo number_format($item['ProductPrice']) ?>.00</p>
                         <h3 class="finish">The product has been shipped</h3>
                     </div>
                 </div>
             </div>
-        <?php }} ?>
+            <?php } ?>
+        </div>
+        <?php } ?>
+        <div class="test"></div>
     </div>
-
+   
     <!-- Modal -->
     <div class="modal" tabindex="-1" id="paymentModal">
         <div class="modal-dialog modal-lg">
@@ -234,23 +227,11 @@
         </div>
     </div>
 
-    
-    <!-- /.container -->
-
-    <footer>
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 text-center">
-                    <p>KMUTNB &copy; Luxshoery 2023</p>
-                </div>
-            </div>
-        </div>
-    </footer>	
-
     <script src="js/jquery.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script>
         function openPaymentModal(OrderID, CustomerID) {
+            console.log("test");
             document.getElementById('OrderID').value = OrderID;
             document.getElementById('CustomerID').value = CustomerID;
             var modal = document.getElementById('paymentModal');
@@ -260,6 +241,16 @@
         function goBack() {
             location.reload();
         }
+
+        function filterItems(category) {
+            document.querySelectorAll('.items-group').forEach(group => {
+                if (category === 'all' || group.getAttribute('data-category') === category) {
+                    group.style.display = 'block';
+                } else {
+                    group.style.display = 'none';
+                }
+            });
+        }
     </script>
 
 </body>
@@ -267,6 +258,9 @@
 </html>
 
 <style>
+    .test {
+        margin-top: 20px;
+    }
     .container-fluid {
         background-color:rgb(255, 255, 255);
         width: 80%;
@@ -377,5 +371,14 @@
 
     .finish {
         color: green;
+    }
+
+    .filter-buttons {
+        margin-top: 30px;
+    }
+
+    .btn {
+        margin-left: 5px;
+        margin-right: 5px;
     }
 </style>

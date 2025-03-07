@@ -109,7 +109,7 @@
 					<p><strong>Colors Available:</strong> '.$Rows[4].'</p>
 					<p><strong>Price: '.number_format($Rows[5]).'.00</strong></p>
                 </div>
-				<center><a onclick="addToCartOnclick('.$Rows[0].');" href="#"  style="margin-bottom: 5px;" class="btn btn-primary">Add to Cart</a></center>
+				<center><a class="add" btn-primary" onclick="addToCartOnclick('.$Rows[0].');" href="#"  style="margin-bottom: 5px;" class="btn btn-primary">Add to Cart</a></center>
             </div>
         </div>
 		';
@@ -146,6 +146,26 @@
         </div>
     </footer>
 
+    <?php
+        if (isset($_SESSION['toast_message'])) {
+            $toast_message = $_SESSION['toast_message'];
+            unset($_SESSION['toast_message']);
+            echo "<script>
+                window.onload = function() {
+                    var toast = document.createElement('div');
+                    toast.classList.add('toast');
+                    toast.innerHTML = '$toast_message';
+                    document.body.appendChild(toast);
+                    toast.style.display = 'block'; // Show toast
+
+                    setTimeout(function() {
+                        toast.style.display = 'none'; // Hide toast after 5 seconds
+                    }, 5000);
+                };
+            </script>";
+        }
+    ?>
+
     <script src="js/jquery.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script>
@@ -172,3 +192,37 @@
 </body>
 
 </html>
+
+<style>
+    .add {
+        text-decoration: none;
+        background-color: #4CAF50; 
+        color: white; 
+        padding: 10px 15px; 
+        border-radius: 5px; 
+        font-size: 14px;
+        display: inline-block; 
+        transition: background-color 0.3s ease; 
+    }
+
+    .add:hover {
+        background-color: #45a049; 
+        text-decoration: none;
+        color: white; 
+    }
+
+    .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            z-index: 9999;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+</style>

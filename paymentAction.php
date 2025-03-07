@@ -13,6 +13,6 @@
       $res = mysqli_query($conn,$query);
 
       if($res){
-            echo "<script>window.alert('Order completed'); window.open('Cart.php','_self',null,true);</script>";
+            echo "<script>window.open('Cart.php','_self',null,true);</script>";
       }
 ?>

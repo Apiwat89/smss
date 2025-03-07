@@ -12,7 +12,9 @@
 	
 	if(empty($Username) || empty($Password) || empty($Firstname) || empty($Middlename) || empty($Lastname) || empty($Address) || empty($EmailAddress))
 	{
-		echo '<script>window.alert("Cannot leave the page blank"); window.open("register.php?ActionType=Register","_self",null,true);</script>';
+		$_SESSION['toast_message'] = 'Incomplete information';
+		header('Location: register.php?ActionType=Register');
+		exit;
 	}
 	else
 	{

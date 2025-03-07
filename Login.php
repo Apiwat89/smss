@@ -48,38 +48,31 @@
     </nav>
 
     <div class="container">
-
-        <div class="row">
-            <div class="box">
-			
-                <div class="col-lg-12">
-                    <hr>
-                    <h2 class="intro-text text-center" style="font-weight: bold;">Please Login</h2>
-                    <hr>
-                </div>
-
-                <div class="col-md-6">
-                 <form role="form" action="LoginDestination.php" method="POST">
-				 
-					<div class="form-group">
-					  <label for="Username">Username:</label>
-					  <input type="text" name="Username" class="form-control" id="Username" placeholder="Enter Username" required>
-					</div>
-					
-					<div class="form-group">
-					  <label for="Password">Password:</label>
-					  <input type="password" name="Password" class="form-control" id="Password" placeholder="Enter password" required>
-					</div>
-					
-					<button type="submit" class="btn btn-default">Submit</button>
-					
-				  </form>
-                </div>
-             
-            </div>
+    <div class="box" style="display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 10px;">		
+        <div class="col-lg-12" style="width: 50%;">
+            <hr>
+            <h2 class="intro-text text-center" style="font-weight: bold;">Please Login</h2>
+            <hr>
         </div>
 
+        <div class="col-md-6">
+            <form role="form" action="LoginDestination.php" method="POST">
+                <div class="form-group">
+                    <label for="Username">Username:</label>
+                    <input type="text" name="Username" class="form-control" id="Username" placeholder="Enter Username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="Password">Password:</label>
+                    <input type="password" name="Password" class="form-control" id="Password" placeholder="Enter password" required>
+                </div>
+
+                <button type="submit" style="display: block; float: right;" class="btn btn-default">Submit</button>
+            </form>
+        </div>
     </div>
+</div>
+
 
     <footer>
         <div class="container">
@@ -91,9 +84,46 @@
         </div>
     </footer>
 
+    <?php
+        if (isset($_SESSION['toast_message'])) {
+            $toast_message = $_SESSION['toast_message'];
+            unset($_SESSION['toast_message']);
+            echo "<script>
+                window.onload = function() {
+                    var toast = document.createElement('div');
+                    toast.classList.add('toast');
+                    toast.innerHTML = '$toast_message';
+                    document.body.appendChild(toast);
+                    toast.style.display = 'block'; // Show toast
+
+                    setTimeout(function() {
+                        toast.style.display = 'none'; // Hide toast after 5 seconds
+                    }, 5000);
+                };
+            </script>";
+        }
+    ?>
+
     <script src="js/jquery.js"></script>
     <script src="js/bootstrap.min.js"></script>
 
 </body>
 
 </html>
+
+<style>
+    .toast {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color:rgb(167, 40, 40);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+        z-index: 99999;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        display: none;
+    }
+</style>

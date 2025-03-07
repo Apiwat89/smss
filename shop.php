@@ -72,7 +72,7 @@
 					<p><strong>Colors Available:</strong> '.$Rows[4].'</p>
 					<p><strong>Price: '.number_format($Rows[5]).'.00</strong></p>
                 </div>
-				<center><a onclick="addToCartOnclick('.$Rows[0].');" href="#"  style="margin-bottom: 5px;" class="btn btn-primary">Add to Cart</a></center>
+				<center><a class="add" onclick="addToCartOnclick('.$Rows[0].');" href="#"  style="margin-bottom: 5px;" class="btn btn-primary">Add to Cart</a></center>
             </div>
         </div>
 		';
@@ -110,3 +110,22 @@
 </body>
 
 </html>
+
+<style>
+    .add {
+        text-decoration: none;
+        background-color: #4CAF50; 
+        color: white; 
+        padding: 10px 15px; 
+        border-radius: 5px; 
+        font-size: 14px;
+        display: inline-block; 
+        transition: background-color 0.3s ease; 
+    }
+
+    .add:hover {
+        background-color: #45a049; 
+        text-decoration: none;
+        color: white; 
+    }
+</style>
